@@ -49,12 +49,13 @@ def get_scratch_view(context, name, read_only=True):
 def _focus_other_group(context):
     """
     Set focus to other group, if open_views_in_other_group settings is true.
+    Returns index of current group (e.g. to restore focus).
     """
     window = context.window if hasattr(context, "window") else context.view.window()
     savvy_settings = sublime.load_settings("GitSavvy.sublime-settings")
     in_other = savvy_settings.get("open_views_in_other_group")
     num_groups = window.num_groups()
-    group = 0
+    current = group = 0
     if (num_groups > 1) and in_other:
         if hasattr(context, 'view'):
             (group, index) = window.get_view_index(context.view)
@@ -62,6 +63,7 @@ def _focus_other_group(context):
             group = window.active_group()
         group = (group + 1) % num_groups
     window.focus_group(group)
+    return current
 
 
 def new_file(context):
@@ -70,8 +72,12 @@ def new_file(context):
     exist.
     """
     window = context.window if hasattr(context, "window") else context.view.window()
-    _focus_other_group(context)
-    return window.new_file()
+    current = _focus_other_group(context)
+    view = window.new_file()
+    savvy_settings = sublime.load_settings("GitSavvy.sublime-settings")
+    if savvy_settings.get('keep_focus_in_dashboard'):
+        window.focus_group(current)
+    return view
 
 
 def open_file(context, path):
@@ -80,8 +86,12 @@ def open_file(context, path):
     exist.
     """
     window = context.window if hasattr(context, "window") else context.view.window()
-    _focus_other_group(context)
-    return window.open_file(path)
+    current = _focus_other_group(context)
+    view = window.open_file(path)
+    savvy_settings = sublime.load_settings("GitSavvy.sublime-settings")
+    if savvy_settings.get('keep_focus_in_dashboard'):
+        window.focus_group(current)
+    return view
 
 
 def get_is_view_of_type(view, typ):

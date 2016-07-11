@@ -52,6 +52,8 @@ class GsInlineDiffCommand(WindowCommand, GitCommand):
 
         if view_key in inline_diff_views and inline_diff_views[view_key] in sublime.active_window().views():
             diff_view = inline_diff_views[view_key]
+            # always focus when the view already exists
+            self.window.focus_view(diff_view)
         else:
             diff_view = util.view.get_scratch_view(self, "inline_diff", read_only=True)
             title = INLINE_DIFF_CACHED_TITLE if cached else INLINE_DIFF_TITLE
@@ -67,7 +69,9 @@ class GsInlineDiffCommand(WindowCommand, GitCommand):
 
             inline_diff_views[view_key] = diff_view
 
-        self.window.focus_view(diff_view)
+            savvy_settings = sublime.load_settings("GitSavvy.sublime-settings")
+            if not savvy_settings.get('keep_focus_in_dashboard'):
+                self.window.focus_view(diff_view)
 
         diff_view.run_command("gs_inline_diff_refresh")
         diff_view.run_command("gs_handle_vintageous")

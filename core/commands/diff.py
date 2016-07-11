@@ -44,6 +44,8 @@ class GsDiffCommand(WindowCommand, GitCommand):
 
         if view_key in diff_views and diff_views[view_key] in sublime.active_window().views():
             diff_view = diff_views[view_key]
+            # always focus when the view already exists
+            self.window.focus_view(diff_view)
         else:
             diff_view = util.view.get_scratch_view(self, "diff", read_only=True)
             title = (DIFF_CACHED_TITLE if in_cached_mode else DIFF_TITLE).format(os.path.basename(repo_path))
@@ -56,8 +58,10 @@ class GsDiffCommand(WindowCommand, GitCommand):
             diff_view.settings().set("git_savvy.diff_view.show_word_diff", False)
             diff_view.settings().set("git_savvy.diff_view.base_commit", base_commit)
             diff_views[view_key] = diff_view
+            savvy_settings = sublime.load_settings("GitSavvy.sublime-settings")
+            if not savvy_settings.get('keep_focus_in_dashboard'):
+                self.window.focus_view(diff_view)
 
-        self.window.focus_view(diff_view)
         diff_view.sel().clear()
         diff_view.run_command("gs_diff_refresh")
 

@@ -292,6 +292,9 @@ class GsStatusDiffInlineCommand(TextCommand, GitCommand):
                 "settings": settings,
                 "cached": True
             })
+        savvy_settings = sublime.load_settings("GitSavvy.sublime-settings")
+        if savvy_settings.get('keep_focus_in_dashboard'):
+            self.view.window().focus_view(self.view)
 
 
 class GsStatusDiffCommand(TextCommand, GitCommand):
@@ -346,6 +349,9 @@ class GsStatusDiffCommand(TextCommand, GitCommand):
                 "in_cached_mode": True,
                 "current_file": True
             })
+        savvy_settings = sublime.load_settings("GitSavvy.sublime-settings")
+        if savvy_settings.get('keep_focus_in_dashboard'):
+            self.view.window().focus_view(self.view)
 
 
 class GsStatusStageFileCommand(TextCommand, GitCommand):
@@ -475,6 +481,9 @@ class GsStatusOpenFileOnRemoteCommand(TextCommand, GitCommand):
             file_paths = list(file_paths)
             for fpath in file_paths:
                 self.view.run_command("gs_open_file_on_remote", {"fpath": fpath})
+        savvy_settings = sublime.load_settings("GitSavvy.sublime-settings")
+        if savvy_settings.get('keep_focus_in_dashboard'):
+            self.view.window().focus_view(self.view)
 
 
 class GsStatusStageAllFilesCommand(TextCommand, GitCommand):
