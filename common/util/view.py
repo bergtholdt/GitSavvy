@@ -39,12 +39,49 @@ def get_scratch_view(context, name, read_only=True):
     """
     Create and return a read-only view.
     """
-    window = context.window if hasattr(context, "window") else context.view.window()
-    view = window.new_file()
+    view = new_file(context)
     view.settings().set("git_savvy.{}_view".format(name), True)
     view.set_scratch(True)
     view.set_read_only(read_only)
     return view
+
+
+def _focus_other_group(context):
+    """
+    Set focus to other group, if open_views_in_other_group settings is true.
+    """
+    window = context.window if hasattr(context, "window") else context.view.window()
+    savvy_settings = sublime.load_settings("GitSavvy.sublime-settings")
+    in_other = savvy_settings.get("open_views_in_other_group")
+    num_groups = window.num_groups()
+    group = 0
+    if (num_groups > 1) and in_other:
+        if hasattr(context, 'view'):
+            (group, index) = window.get_view_index(context.view)
+        else:
+            group = window.active_group()
+        group = (group + 1) % num_groups
+    window.focus_group(group)
+
+
+def new_file(context):
+    """
+    Open a file and return the view. Opens in other group if multiple groups
+    exist.
+    """
+    window = context.window if hasattr(context, "window") else context.view.window()
+    _focus_other_group(context)
+    return window.new_file()
+
+
+def open_file(context, path):
+    """
+    Open a file and return the view. Opens in other group if multiple groups
+    exist.
+    """
+    window = context.window if hasattr(context, "window") else context.view.window()
+    _focus_other_group(context)
+    return window.open_file(path)
 
 
 def get_is_view_of_type(view, typ):

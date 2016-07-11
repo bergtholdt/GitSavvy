@@ -87,7 +87,6 @@
         Use the Sublime configured syntax for COMMIT_EDITMSG rather than
         the custom bundled syntax that comes with GitSavvy.
     */
-
     "use_syntax_for_commit_editmsg": false,
 
     /*
@@ -234,6 +233,13 @@
         "tags",
         "graph"
     ],
+
+    /*
+        Set this value to true in order to open new views in another group by 
+        default.  This works if there are at least two groups defined for the
+        current window and the view is a new view, not yet open in any group.
+     */
+    "open_views_in_other_group": false,
 
     /*
         Set this value to a valid git reset mode (e.g. --hard, --soft) to skip
